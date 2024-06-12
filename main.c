@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "schedule.h"
 #include <unistd.h>      // fork, execl 함수 사용을 위한 헤더 파일
 #include <sys/wait.h>    // wait 함수 사용을 위한 헤더 파일
+#include "schedule.h"
 
 // ANSI 색상 코드
 #define RESET "\033[0m"
@@ -29,11 +29,9 @@ void print_menu() {
     printf(BLUE "1. Add Schedule to Shared Memory\n" RESET);
     printf(BLUE "2. Delete Schedule from Shared Memory\n" RESET);
     printf(BLUE "3. View Shared Memory Schedule\n" RESET);
-    printf(BLUE "4. Backup Schedule File\n" RESET);
-    printf(BLUE "5. Search Schedule in Shared Memory\n" RESET);
-    printf(BLUE "6. Search Schedule in File\n" RESET);
-    printf(BLUE "7. Export Schedule to File\n" RESET); // 일정 내보내기 옵션 추가
-    printf(BLUE "8. Exit\n" RESET);
+    printf(BLUE "4. Search Schedule in Shared Memory\n" RESET);
+    printf(BLUE "5. Export Schedule to File\n" RESET);
+    printf(BLUE "6. Exit\n" RESET);
     printf(CYAN "Select an option: " RESET);
 }
 
@@ -71,14 +69,11 @@ int main() {
     initialize_shared_memory();
     initialize_semaphore();
 
-    // 프로그램 제목 및 인사말 출력
+    // 프로그램 제목 출력
     print_title();
-    printf("Hello! Welcome to the Schedule Management Program.\n");
-
     // 시스템 정보 출력
     print_system_info();
 
-    // 메인 루프: 사용자 입력을 받아서 선택된 기능을 실행
     while (1) {
         print_menu();
         scanf("%d", &choice);
@@ -94,22 +89,14 @@ int main() {
                 view_shared_memory_schedule();
                 break;
             case 4:
-                backup_schedule(FILENAME);
-                break;
-            case 5:
                 printf("Enter keyword to search in shared memory: ");
                 scanf("%s", keyword);
                 search_schedule(keyword);
                 break;
-            case 6:
-                printf("Enter keyword to search in file: ");
-                scanf("%s", keyword);
-                search_schedule_file(FILENAME, keyword);
-                break;
-           case 7:
+            case 5:
                 export_schedule_to_file(); // 일정 내보내기 함수 호출
                 break;
-            case 8:
+            case 6:
                 detach_shared_memory();
                 remove_shared_memory();
                 print_status("Shared memory and semaphore cleaned up. Exiting.");
@@ -124,3 +111,4 @@ int main() {
 
     return 0;
 }
+

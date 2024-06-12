@@ -25,3 +25,4 @@ export_schedule.o: export_schedule.c schedule.h
 
 clean:
 	rm -f $(OBJECTS) $(EXPORT_SCHEDULE_OBJ) schedule_program export_schedule
+
