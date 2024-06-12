@@ -16,6 +16,9 @@
 
 #define FILENAME "schedule.txt"
 
+#define SHM_KEY 0x1234
+#define SEM_KEY 0x5678
+
 // 프로그램 제목을 출력하는 함수
 void print_title() {
     printf(CYAN "================================================\n");
