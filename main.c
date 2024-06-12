@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>      // fork, execl 함수 사용을 위한 헤더 파일
-#include <sys/wait.h>    // wait 함수 사용을 위한 헤더 파일
+#include <unistd.h>    
+#include <sys/wait.h>    
 #include "schedule.h"
 
-// ANSI 색상 코드
+// ANSI 색상 코드 정의
 #define RESET "\033[0m"
 #define RED "\033[31m"
 #define GREEN "\033[32m"
@@ -46,6 +46,7 @@ void print_error(const char *message) {
 }
 
 // 일정을 파일로 내보내는 함수
+// exec 함수를 사용하여 외부 프로그램을 실행
 void export_schedule_to_file() {
     pid_t pid = fork();
     if (pid == 0) { // 자식 프로세스
@@ -80,23 +81,29 @@ int main() {
 
         switch (choice) {
             case 1:
+                // 공유 메모리에 일정 추가
                 add_schedule_to_shared_memory();
                 break;
             case 2:
+                // 공유 메모리에서 일정 삭제
                 delete_schedule_from_shared_memory();
                 break;
             case 3:
+                // 공유 메모리에 저장된 일정 보기
                 view_shared_memory_schedule();
                 break;
             case 4:
+                // 공유 메모리에서 일정 검색
                 printf("Enter keyword to search in shared memory: ");
                 scanf("%s", keyword);
                 search_schedule(keyword);
                 break;
             case 5:
-                export_schedule_to_file(); // 일정 내보내기 함수 호출
+                // 일정 파일로 내보내기
+                export_schedule_to_file(); 
                 break;
             case 6:
+                // 공유 메모리 및 세마포어 정리 후 종료
                 detach_shared_memory();
                 remove_shared_memory();
                 print_status("Shared memory and semaphore cleaned up. Exiting.");
@@ -111,4 +118,3 @@ int main() {
 
     return 0;
 }
-
