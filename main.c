@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>    
+#include <sys/wait.h>    
 #include "schedule.h"
-#include <unistd.h>      // fork, execl 함수 사용을 위한 헤더 파일
-#include <sys/wait.h>    // wait 함수 사용을 위한 헤더 파일
 
-// ANSI 색상 코드
+// ANSI 색상 코드 정의
 #define RESET "\033[0m"
 #define RED "\033[31m"
 #define GREEN "\033[32m"
@@ -15,6 +15,9 @@
 #define WHITE "\033[37m"
 
 #define FILENAME "schedule.txt"
+
+#define SHM_KEY 0x1234
+#define SEM_KEY 0x5678
 
 // 프로그램 제목을 출력하는 함수
 void print_title() {
@@ -29,11 +32,9 @@ void print_menu() {
     printf(BLUE "1. Add Schedule to Shared Memory\n" RESET);
     printf(BLUE "2. Delete Schedule from Shared Memory\n" RESET);
     printf(BLUE "3. View Shared Memory Schedule\n" RESET);
-    printf(BLUE "4. Backup Schedule File\n" RESET);
-    printf(BLUE "5. Search Schedule in Shared Memory\n" RESET);
-    printf(BLUE "6. Search Schedule in File\n" RESET);
-    printf(BLUE "7. Export Schedule to File\n" RESET); // 일정 내보내기 옵션 추가
-    printf(BLUE "8. Exit\n" RESET);
+    printf(BLUE "4. Search Schedule in Shared Memory\n" RESET);
+    printf(BLUE "5. Export Schedule to File\n" RESET);
+    printf(BLUE "6. Exit\n" RESET);
     printf(CYAN "Select an option: " RESET);
 }
 
@@ -48,6 +49,7 @@ void print_error(const char *message) {
 }
 
 // 일정을 파일로 내보내는 함수
+// exec 함수를 사용하여 외부 프로그램을 실행
 void export_schedule_to_file() {
     pid_t pid = fork();
     if (pid == 0) { // 자식 프로세스
@@ -71,45 +73,40 @@ int main() {
     initialize_shared_memory();
     initialize_semaphore();
 
-    // 프로그램 제목 및 인사말 출력
+    // 프로그램 제목 출력
     print_title();
-    printf("Hello! Welcome to the Schedule Management Program.\n");
-
     // 시스템 정보 출력
     print_system_info();
 
-    // 메인 루프: 사용자 입력을 받아서 선택된 기능을 실행
     while (1) {
         print_menu();
         scanf("%d", &choice);
 
         switch (choice) {
             case 1:
+                // 공유 메모리에 일정 추가
                 add_schedule_to_shared_memory();
                 break;
             case 2:
+                // 공유 메모리에서 일정 삭제
                 delete_schedule_from_shared_memory();
                 break;
             case 3:
+                // 공유 메모리에 저장된 일정 보기
                 view_shared_memory_schedule();
                 break;
             case 4:
-                backup_schedule(FILENAME);
-                break;
-            case 5:
+                // 공유 메모리에서 일정 검색
                 printf("Enter keyword to search in shared memory: ");
                 scanf("%s", keyword);
                 search_schedule(keyword);
                 break;
+            case 5:
+                // 일정 파일로 내보내기
+                export_schedule_to_file(); 
+                break;
             case 6:
-                printf("Enter keyword to search in file: ");
-                scanf("%s", keyword);
-                search_schedule_file(FILENAME, keyword);
-                break;
-           case 7:
-                export_schedule_to_file(); // 일정 내보내기 함수 호출
-                break;
-            case 8:
+                // 공유 메모리 및 세마포어 정리 후 종료
                 detach_shared_memory();
                 remove_shared_memory();
                 print_status("Shared memory and semaphore cleaned up. Exiting.");

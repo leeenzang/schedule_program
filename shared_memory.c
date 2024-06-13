@@ -47,6 +47,8 @@ void initialize_shared_memory() {
         perror("shmat");
         exit(1);
     }
+    
+    sem_lock(sem_id); // 세마포어 잠금
 
     // 파일에서 데이터를 읽어와서 공유 메모리에 로드
     FILE *file = fopen("schedule_backup.dat", "rb");
@@ -56,6 +58,7 @@ void initialize_shared_memory() {
     } else {
         shared_memory->count = 0;
     }
+    sem_unlock(sem_id); // 세마포어 잠금 해제
 
     printf("Shared memory initialized with count: %d\n", shared_memory->count);
 }
@@ -196,6 +199,8 @@ void view_shared_memory_schedule() {
 
 // 공유 메모리를 분리하고 데이터를 파일에 저장하는 함수
 void detach_shared_memory() {
+    sem_lock(sem_id); // 세마포어 잠금
+
     // 공유 메모리의 데이터를 파일에 저장
     FILE *file = fopen("schedule_backup.dat", "wb");
     if (file != NULL) {
@@ -204,6 +209,8 @@ void detach_shared_memory() {
     } else {
         perror("fopen");
     }
+    sem_unlock(sem_id); // 세마포어 잠금 해제
+
 
     if (shmdt(shared_memory) == -1) {
         perror("shmdt");
